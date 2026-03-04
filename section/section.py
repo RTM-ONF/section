@@ -36,6 +36,36 @@ class Section:
         self.xz = xz
         return True
 
+    def length(self, dim="2D"):
+        """
+        calculate the section length
+
+        arguments:
+        - dim: "2D" for plan length or "3D" for actual length - str
+        
+        returns:
+        - plan length (m) - float
+        or
+        - actual length (m) - float
+        or
+        - None - NoneType
+
+        examples:
+        >>> length = section.length()
+        
+        """
+        if not isinstance(dim, str):
+            return None
+        elif dim.upper() not in ["2D", "3D"]:
+            return None
+        elif dim.upper() == "2D":
+            return float(self._xz[-1][0] - self._xz[0][0])
+        else:
+            dist = 0
+            for i in range(1, len(self._xz)):
+                dist += ((self.x[i] - self.x[i-1])**2 + (self.z[i] - self.z[i-1])**2)**0.5
+            return float(dist)
+
     def to_df(self, x_field="distance", z_field="altitude"):
         
         return pd.DataFrame(
