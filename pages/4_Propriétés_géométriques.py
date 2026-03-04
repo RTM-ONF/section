@@ -2,26 +2,22 @@ from math import ceil
 import plotly.graph_objects as go
 import streamlit as st
 
-st.title("Grandeurs hydrauliques")
+st.title("Propriétés géométriques")
+
+if "water_height" not in st.session_state:
+    st.session_state.water_height = 0.
 
 if "section" in st.session_state:
     section = st.session_state.section
     if section:
-
-        if "water_height" not in st.session_state:
-            value = 0.
-        else:
-            value = st.session_state.water_height
         
         water_height = st.number_input(label="Hauteur d'eau [m]",
-                                       value=value,
+                                       value=st.session_state.water_height,
                                        min_value=0.,
                                        max_value=float(ceil(max(section.z)-min(section.z))),
                                        step=0.001,
                                        format="%0.3f"
                                        )
-
-        st.session_state.water_height = water_height
 
         water_lines = section.water_lines(min(section.z) + water_height)
 
