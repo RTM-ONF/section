@@ -18,28 +18,28 @@ if "section" in st.session_state:
                                        step=0.001,
                                        format="%0.3f"
                                        )
-
+        
         water_lines = section.water_lines(min(section.z) + water_height)
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=section.x,
-                                 y=section.z,
-                                 mode="lines",
-                                 name="section",
-                                 ))
+                                y=section.z,
+                                mode="lines",
+                                name="section",
+                                ))
 
         for line in water_lines:
             fig.add_trace(go.Scatter(x=[x for x, z in line],
-                                     y=[z for x, z in line],
-                                     mode="lines",
-                                     name=f"water line (h = {water_height} m)",
-                                     ))
+                                    y=[z for x, z in line],
+                                    mode="lines",
+                                    name=f"water line (h = {water_height} m)",
+                                    ))
 
         fig.update_layout(xaxis_title="distance [m]",
-                          yaxis_title="altitude [m]",
-                          yaxis_scaleanchor="x",
-                          showlegend=True
-                          )
+                        yaxis_title="altitude [m]",
+                        yaxis_scaleanchor="x",
+                        showlegend=True
+                        )
 
         fig.update_xaxes(showgrid=True)
         fig.update_yaxes(showgrid=True)
@@ -61,3 +61,6 @@ if "section" in st.session_state:
             | Profondeur hydraulique | {round(D, 3)} m              |
 
             """)
+
+    if st.button("Enregistrer les paramètres"):
+        st.session_state.water_height = water_height
