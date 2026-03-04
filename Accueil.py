@@ -3,11 +3,28 @@ import streamlit as st
 st.title("Calculs hydrauliques sur section irrégulière")
 
 """
-Cette feuille de calcul en ligne est dédiée aux calculs hydrauliques pour les sections irrégulières. 
+Cet outil a été conçu pour faciliter l’exploration, la visualisation et le calcul des principales caractéristiques géométriques et hydrauliques d’une **section irrégulière**.
 
-Grâce à une interface simple, vous pouvez importer la géométrie de votre profil transversal et obtenir instantanément des grandeurs clés comme l’aire, le périmètre mouillé ou le rayon hydraulique.
+Pour vous accompagner étape par étape, l’application se compose de plusieurs onglets :
 
-Cet outil est idéal pour les ingénieurs, les étudiants et tous ceux qui souhaitent explorer différentes configurations de canal ou de lit de rivière en quelques clics.
+### 1. Importer une section
 
-En quelques secondes, transformez la géométrie de votre section en résultats concrets et comparez différents scénarios pour optimiser vos projets hydrauliques.
+Importez votre fichier décrivant la section.
+
+### 2. Coordonnées et statistiques basiques
+
+Consultez les valeurs brutes de la géométrie ainsi que leurs statistiques essentielles.
+
+### 3. Visualiser la section
+
+Explorez votre section sous forme de graphique interactif.
+
+### 4. Propriétés géométriques
+
+Renseignez une hauteur d’eau pour afficher automatiquement le niveau d’eau sur la section et
+les caractéristiques géométriques clés.
+
+### 5. Relation hauteur débit
+
+Générez les courbes de débit en fonction de la hauteur d’eau selon plusieurs modèles hydrauliques.
 """

@@ -7,13 +7,20 @@ if "section" in st.session_state:
     section = st.session_state.section
     if section:
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=section.x, y=section.z, mode="lines"))
+        fig.add_trace(go.Scatter(x=section.x,
+                                 y=section.z,
+                                 mode="lines",
+                                 name="section"))
 
         fig.update_layout(
             xaxis_title="distance [m]",
             yaxis_title="altitude [m]",
-            yaxis_scaleanchor="x"
+            yaxis_scaleanchor="x",
+            showlegend=True
         )
+
+        fig.update_xaxes(showgrid=True)
+        fig.update_yaxes(showgrid=True)
 
         st.plotly_chart(fig)
 

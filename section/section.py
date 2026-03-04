@@ -1,8 +1,86 @@
+import numpy as np
 import pandas as pd
+from shapely.geometry import LineString, Point
 
 class Section:
     def __init__(self):
         self._xz = [(0., 0.), (1., 0.)]
+
+    def add_point(self, point):
+        """
+        add a point
+        
+        arguments:
+        - point: (x, z) - tuple
+            - x: distance (m) - int | float
+            - z: altitude (m) - int | float
+
+        returns:
+        - True if success
+        - False else
+
+        examples:
+        >>> section.add_point((5., 1210.))
+
+        """
+        if not isinstance(point, tuple):
+            return False
+        elif not len(point) > 1:
+            return False
+        else:
+            x, z = point[0], point[1]
+            if not (isinstance(x, (int, float)) and isinstance(z, (int, float))):
+                return False
+            elif x in self.x:
+                return False
+            else:
+                self._xz.append((float(x), float(z)))
+                self._xz.sort()
+                return True
+
+    def area(self, kind="below"):
+        """
+        calculate the area below or above the section
+
+        arguments:
+        - kind: "below" | "above" - str
+
+        returns:
+        - area: area (m2) - float
+        or
+        - None - NoneType
+
+        examples:
+        >>> area = section.area()
+        
+        """
+        if kind not in ["above", "below"]:
+            return None
+        else:
+            x = self.x
+            z = [z - min(self.z) for z in self.z]
+
+            if kind == "below":
+                return float(np.trapezoid(z, x))
+            else:
+                return (self.length() * (max(z) - min(z))) - float(np.trapezoid(z, x))
+
+    def duplicate(self):
+        """
+        duplicate the section
+
+        returns:
+        - new_section: duplicated section - Section
+
+        examples:
+        >>> new_section = section.duplicate()
+
+        """
+        new_section = Section()
+        
+        new_section.xz = list(self._xz)
+        
+        return new_section
 
     def from_df(self, df, x_field="X", z_field="Z"):
         if not isinstance(df, pd.DataFrame):
@@ -35,6 +113,102 @@ class Section:
 
         self.xz = xz
         return True
+
+    def geometric_properties(self, altitude):
+        if not (isinstance(altitude, float) or isinstance(altitude, int)):
+            return None
+        elif not min(self.z) <= altitude <= max(self.z):
+            return None
+
+        lines = self.water_lines(altitude)
+
+        # top width
+        B = 0.
+
+        # wetted perimter
+        P = 0.
+
+        # wetted area
+        A = 0.
+
+        if len(lines) == 0:
+            return None
+
+        for line in lines:
+            b = line[-1][0] - line[0][0]
+            B += b
+
+            sub_section = self.truncate(distances=(line[0][0], line[-1][0]))
+
+            p = sub_section.length(dim="3D")
+            P += p
+
+            a = sub_section.area(kind="above")
+            A += a
+
+        R = A/P
+        D = A/B
+
+        return B, P, A, R, D
+
+    def interpolate(self, x):
+        """
+        interpolate the section
+
+        arguments:
+        - x: distance (m) - int | float
+
+        returns:
+        - z: interpolated altitude (m) - float
+        or
+        - None - NoneType
+
+        examples:
+        >>> z = section.interpolate(x=10.)
+
+        """
+        if not isinstance(x, (int, float)):
+            return None
+        elif not min(self.x) <= x <= max(self.x):
+            return None
+        else:
+            x = float(x)
+            Xs = self.x
+            Xs.append(x)
+            Xs.sort()
+
+            if x == Xs[0]:
+                return float(self.z[0])
+            elif x == Xs[-1]:
+                return float(self.z[-1])
+            else:
+                return float(np.interp(x, self.x, self.z))
+
+    def intersect(self, curve):
+        line1 = LineString(self.xz)
+        line2 = LineString(curve)
+
+        intersections = line1.intersection(line2)
+
+        points = []
+
+        if intersections.is_empty:
+            return points
+        elif intersections.geom_type == "Point":
+            points += list(intersections.coords)
+        elif intersections.geom_type == "MultiPoint":
+            for geom in intersections.geoms:
+                points += list(geom.coords)
+        elif intersections.geom_type == "LineString":
+            points += list(intersections.coords)
+        elif intersections.geom_type == "MultiLineString":
+            for geom in intersections.geoms:
+                points += list(geom.coords)
+        elif intersections.geom_type == "GeometryCollection":
+            for geom in intersections.geoms:
+                points += list(geom.coords)
+
+        return sorted(points)
 
     def length(self, dim="2D"):
         """
@@ -74,6 +248,107 @@ class Section:
                 "altitude" : self.z
             }
         )
+
+    def truncate(self, **kwargs):
+        """
+        truncate the section
+
+        arguments:
+        - indexes = (i_start, i_end) - tuple
+            - i_start: start index - int
+            - i_end: end index - int
+        or
+        - distances = (x_start, x_end) - tuple
+            - x_start: start distance - int | float
+            - x_end: end distance - int | float
+
+        returns:
+        - new_section: truncated section - Section
+        or
+        - None - NoneType
+
+        examples:
+        >>> new_section = section.truncate(indexes=(10, 20))
+
+        """
+        new_section = self.duplicate()
+
+        if 'indexes' in kwargs.keys():
+            if not isinstance(kwargs['indexes'], tuple):
+                return None
+            elif not 1 < len(kwargs['indexes']):
+                return None
+            else:
+                indexes = kwargs['indexes']
+            
+            if not (isinstance(indexes[0], int) and isinstance(indexes[1], int)):
+                return None
+            else:
+                i_start = indexes[0]
+                i_end = indexes[1]
+            
+            if not 0 <= i_start < i_end < len(self._xz):
+                return None
+            else:
+                new_section.xz = self._xz[i_start:i_end+1]
+                
+                return new_section
+
+        elif 'distances' in kwargs.keys():            
+            if not isinstance(kwargs['distances'], tuple):
+                return None
+            elif not 1 < len(kwargs['distances']):
+                return None
+            else:
+                distances = kwargs['distances']
+
+            if not (isinstance(distances[0], (int, float)) and isinstance(distances[1], (int, float))):
+                return
+            else:
+                x_start = float(distances[0])
+                x_end = float(distances[1])
+
+                if not self.x[0] <= x_start < x_end <= self.x[-1]:
+                    return None
+                else:
+                    new_section.add_point((x_start, new_section.interpolate(x_start)))
+                    new_section.add_point((x_end, new_section.interpolate(x_end)))
+
+                    i_start = new_section.x.index(x_start)
+                    i_end = new_section.x.index(x_end)
+
+                    new_section.xz = new_section.xz[i_start:i_end+1]
+
+                    return new_section
+        
+        else:
+            return None
+
+    def water_lines(self, altitude):
+        if not (isinstance(altitude, float) or isinstance(altitude, int)):
+            return None
+        elif not min(self.z) <= altitude <= max(self.z):
+            return None
+
+        lines = []
+        
+        points = self.intersect([(self.x[0], altitude),
+                                 (self.x[-1], altitude)])
+
+        if len(points) < 2:
+            return lines
+
+        for i in range(0, len(points)-1):
+            x_start, x_end = points[i][0], points[i+1][0]
+            sub_section = self.truncate(distances=(x_start, x_end))
+
+            if len(sub_section.xz) == 2:
+                continue
+
+            if all([z >= 0 for z in np.array(altitude) - np.array(sub_section.z)][1:-1]):
+                lines.append([(x_start, self.interpolate(x_start)), (x_end, self.interpolate(x_end))])
+
+        return lines
 
     @property
     def xz(self):
