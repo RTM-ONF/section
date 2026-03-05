@@ -17,14 +17,14 @@ if "section" in st.session_state:
         st.markdown(f"""
         | Grandeur           | Valeur                                 |
         |--------------------|----------------------------------------|
-        | Longueur 2D        | {round(section.length(), 3)} m         |
-        | Longueur 3D        | {round(section.length(dim="3D"), 3)} m |
-        | Altitude min       | {round(min(section.z), 3)} m           |
-        | Altitude max       | {round(max(section.z), 3)} m           |
-        | Altitude moyenne   | {round(np.mean(section.z), 3)} m       |
-        | Ecart-type         | {round(np.std(section.z), 3)} m        |
-        | Premier quartile   | {round(z_Q1, 3)} m                     |
-        | Médiane            | {round(z_median, 3)} m                 |
-        | Troisième quartile | {round(z_Q3, 3)} m                     |
-        | Neuvième décile    | {round(z_D9, 3)} m                     |
+        | longueur 2D        | {round(section.length(), 3)} m         |
+        | longueur 3D        | {round(section.length(dim="3D"), 3)} m |
+        | altitude min       | {round(min(section.z), 3)} m           |
+        | altitude max       | {round(max(section.z), 3)} m           |
+        | altitude moyenne   | {round(np.mean(section.z), 3)} m       |
+        | écart-type         | {round(np.std(section.z), 3)} m        |
+        | premier quartile   | {round(z_Q1, 3)} m                     |
+        | médiane            | {round(z_median, 3)} m                 |
+        | troisième quartile | {round(z_Q3, 3)} m                     |
+        | neuvième décile    | {round(z_D9, 3)} m                     |
         """)

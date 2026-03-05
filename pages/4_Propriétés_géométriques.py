@@ -23,6 +23,8 @@ if "section" in st.session_state:
                                        key="_water_height",
                                        on_change=update
                                        )
+
+        st.write(f"Altitude de la ligne d'eau : {round(min(section.z) + water_height, 3)} m")
         
         water_lines = section.water_lines(min(section.z) + water_height)
 
@@ -37,7 +39,7 @@ if "section" in st.session_state:
             fig.add_trace(go.Scatter(x=[x for x, z in line],
                                     y=[z for x, z in line],
                                     mode="lines",
-                                    name=f"water line (h = {water_height} m)",
+                                    name=f"ligne d'eau",
                                     ))
 
         fig.update_layout(xaxis_title="distance [m]",
@@ -59,10 +61,10 @@ if "section" in st.session_state:
             st.markdown(f"""
             | Grandeur               | Valeur                       |
             |------------------------|------------------------------|
-            | Largeur au miroir      | {round(B, 3)} m              |
-            | Périmètre mouillé      | {round(P, 3)} m              |
-            | Surface mouillée       | {round(A, 3)} m²              |
-            | Rayon hydraulique      | {round(R, 3)} m              |
-            | Profondeur hydraulique | {round(D, 3)} m              |
+            | largeur au miroir      | {round(B, 3)} m              |
+            | périmètre mouillé      | {round(P, 3)} m              |
+            | surface mouillée       | {round(A, 3)} m²              |
+            | rayon hydraulique      | {round(R, 3)} m              |
+            | profondeur hydraulique | {round(D, 3)} m              |
 
             """)
