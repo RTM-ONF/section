@@ -10,13 +10,18 @@ if "water_height" not in st.session_state:
 if "section" in st.session_state:
     section = st.session_state.section
     if section:
+
+        def update():
+            st.session_state.water_height = st.session_state._water_height
         
         water_height = st.number_input(label="Hauteur d'eau [m]",
                                        value=st.session_state.water_height,
                                        min_value=0.,
                                        max_value=float(ceil(max(section.z)-min(section.z))),
                                        step=0.001,
-                                       format="%0.3f"
+                                       format="%0.3f",
+                                       key="_water_height",
+                                       on_change=update
                                        )
         
         water_lines = section.water_lines(min(section.z) + water_height)
@@ -61,6 +66,3 @@ if "section" in st.session_state:
             | Profondeur hydraulique | {round(D, 3)} m              |
 
             """)
-
-    if st.button("Enregistrer les paramètres"):
-        st.session_state.water_height = water_height
