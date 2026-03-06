@@ -90,25 +90,24 @@ if "section" in st.session_state:
                     results["heights"].append(height)
                     results["discharges"].append(discharge)
 
-            # st.write(results)
-            # fig = go.Figure()
-            # fig.add_trace(go.Scatter(x=results["heights"],
-            #                          y=results["discharges"],
-            #                          mode="lines",
-            #                          name="Ferguson"))
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=results["heights"],
+                                     y=results["discharges"],
+                                     mode="lines",
+                                     name="Ferguson"))
 
-            # fig.update_layout(
-            #     xaxis=dict(
-            #         title="hauteur d'eau [m]"
-            #     ),
-            #     yaxis=dict(
-            #         title="débit [m<sup>3</sup>/s]"
-            #     ),
-            #     showlegend=True
-            # )
+            fig.update_layout(
+                xaxis=dict(
+                    title="hauteur d'eau [m]"
+                ),
+                yaxis=dict(
+                    title="débit [m<sup>3</sup>/s]"
+                ),
+                showlegend=True
+            )
 
-            # fig.update_xaxes(showgrid=True)
-            # fig.update_yaxes(showgrid=True)
+            fig.update_xaxes(showgrid=True)
+            fig.update_yaxes(showgrid=True)
 
-            # st.plotly_chart(fig, config={"mathjax": "cdn"})
+            st.plotly_chart(fig)
 
