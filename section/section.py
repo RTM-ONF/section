@@ -1,3 +1,5 @@
+from math import sqrt
+
 import numpy as np
 import pandas as pd
 from shapely.geometry import LineString, Point
@@ -81,6 +83,42 @@ class Section:
         new_section.xz = list(self._xz)
         
         return new_section
+
+    def ferguson(self, altitude, slope, d84, g=9.81):
+        if not (isinstance(altitude, float) or isinstance(altitude, int)):
+            return None
+        elif not min(self.z) <= altitude <= max(self.z):
+            return None
+
+        if not (isinstance(slope, float) or isinstance(slope, int)):
+            return None
+        elif not slope >= 0:
+            return None
+
+        if not (isinstance(d84, float) or isinstance(d84, int)):
+            return None
+        elif not d84 > 0:
+            return None
+
+        if not(isinstance(g, float) or isinstance(g, int)):
+            return None
+        elif not g > 0:
+            return None
+
+        geom_props = self.geometric_properties(altitude)
+
+        if not geom_props:
+            return None
+
+        B, P, A, R, D = geom_props
+
+        u = 2.5 * (R / d84)
+        u *= sqrt(g * slope * R)
+        u /= sqrt(1 + 0.15 * (R / d84)**(5./3.))
+
+        Q = u * A
+
+        return float(Q)
 
     def from_df(self, df, x_field="X", z_field="Z"):
         if not isinstance(df, pd.DataFrame):
