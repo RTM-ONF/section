@@ -6,7 +6,7 @@ import streamlit as st
 st.title("Courbes débit vs hauteur")
 
 if "laws" not in st.session_state:
-    st.session_state.laws = ["Ferguson"]
+    st.session_state.laws = ["Critical", "Ferguson"]
 
 if "height_step" not in st.session_state:
     st.session_state.height_step = 0.10
@@ -34,13 +34,12 @@ if "section" in st.session_state:
             st.session_state.d84 = st.session_state._d84
 
         laws = st.multiselect("Sélectionner les lois d'écoulement",
-                            ["Ferguson"],
-                            default=st.session_state.laws,
-                            key="_laws",
-                            on_change=update_laws
-                            )
+                              ["Critical", "Ferguson"],
+                              default=st.session_state.laws,
+                              key="_laws",
+                              on_change=update_laws
+                             )
 
-        # st.write("You selected:", laws)
         st.write("")
 
         with st.expander("Paramètres"):
@@ -55,7 +54,7 @@ if "section" in st.session_state:
                                         on_change=update_height_step
                                         )
 
-            slope = st.number_input(label="Pente [m/100m]",
+            slope = st.number_input(label="Pente [m/100m] (Ferguson)",
                                     value=st.session_state.slope,
                                     min_value=0.01,
                                     step=0.1,
@@ -64,7 +63,7 @@ if "section" in st.session_state:
                                     on_change=update_slope
                                     )
 
-            d84 = st.number_input(label="D_84 [m]",
+            d84 = st.number_input(label="D_84 [m] (Ferguson)",
                                   value=st.session_state.d84,
                                   min_value=0.001,
                                   step=0.005,
@@ -73,10 +72,11 @@ if "section" in st.session_state:
                                   on_change=update_d84
                                   )
 
-        if "Ferguson" in laws:
+        if len(laws) > 0:
             results = {
                 "heights" : [],
-                "discharges" : []
+                "discharges_critical" : [],
+                "discharges_ferguson" : []
             }
 
             dz = max(section.z) - min(section.z)
@@ -85,16 +85,25 @@ if "section" in st.session_state:
                 heights = np.append(heights, dz)
 
             for height in heights:
-                discharge = section.ferguson(min(section.z) + height, slope/100, d84)
-                if discharge:
-                    results["heights"].append(height)
-                    results["discharges"].append(discharge)
+                if "Ferguson" in laws:
+                    discharge = section.ferguson(min(section.z) + height, slope/100, d84)
+                    if discharge:
+                        if height not in results["heights"]:
+                            results["heights"].append(height)
+                        results["discharges_ferguson"].append(discharge)
+                if "Critical" in laws:
+                    discharge = section.critical(min(section.z) + height)
+                    if discharge:
+                        if height not in results["heights"]:
+                            results["heights"].append(height)
+                        results["discharges_critical"].append(discharge)
 
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=results["heights"],
-                                     y=results["discharges"],
-                                     mode="lines",
-                                     name="Ferguson"))
+            for law in laws:
+                fig.add_trace(go.Scatter(x=results["heights"],
+                                         y=results[f"discharges_{law.lower()}"],
+                                         mode="lines",
+                                         name=f"{law}"))
 
             fig.update_layout(
                 xaxis=dict(
@@ -110,4 +119,36 @@ if "section" in st.session_state:
             fig.update_yaxes(showgrid=True)
 
             st.plotly_chart(fig)
+
+    # if st.checkbox("Afficher l'aide"):
+    with st.expander("Documentation"):
+        st.markdown(
+            """
+            $\\boxed{Q = v \\times A}$
+
+            - Q : débit liquide ;
+            - v : vitesse d'écoulement ;
+            - A : surface mouillée.
+
+            #### Régime critique
+
+            $\\boxed{F_r = \\frac{v}{\\sqrt{g \\times D}} = 1  \\Leftrightarrow v = \\sqrt{g \\times D}}$
+
+            $\\boxed{v = \\sqrt{g \\times D}}$
+
+            - $v$ : vitesse d'écoulement ;
+            - $g$ : accélération de la pesanteur ;
+            - $D$ : profondeur hydraulique.
+
+            #### Ferguson
+
+            $\\boxed{\\frac{v}{\\sqrt{g J R_h}} = \\frac{2.5\\left(\\frac{R_h}{D_{84}}\\right)}{\\sqrt{1 + 0.15\\left(\\frac{R_h}{D_{84}}\\right)^{\\frac{5}{3}}}}}$
+
+            - $v$ : vitesse d'écoulement ;
+            - $g$ : accélération de la pesanteur ;
+            - $J$ : pente ;
+            - $R_h$ : rayon hydraulique ;
+            - $D_{84}$ : diamètre caractéristique.
+            """
+        )
 

@@ -67,6 +67,30 @@ class Section:
             else:
                 return (self.length() * (max(z) - min(z))) - float(np.trapezoid(z, x))
 
+    def critical(self, altitude, g=9.81):
+        if not (isinstance(altitude, float) or isinstance(altitude, int)):
+            return None
+        elif not min(self.z) <= altitude <= max(self.z):
+            return None
+
+        if not(isinstance(g, float) or isinstance(g, int)):
+            return None
+        elif not g > 0:
+            return None
+
+        geom_props = self.geometric_properties(altitude)
+
+        if not geom_props:
+            return None
+
+        B, P, A, R, D = geom_props
+
+        u = sqrt(g * D)
+        
+        Q = u * A
+
+        return float(Q)
+
     def duplicate(self):
         """
         duplicate the section

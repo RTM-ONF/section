@@ -7,7 +7,7 @@ if "section" in st.session_state:
     if st.session_state.section:
         st.dataframe(st.session_state.section.to_df())
 
-st.title("Statistiques basiques")
+st.title("Statistiques")
 
 if "section" in st.session_state:
     section = st.session_state.section
