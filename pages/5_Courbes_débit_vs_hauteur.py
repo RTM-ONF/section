@@ -74,9 +74,9 @@ if "section" in st.session_state:
 
         if len(laws) > 0:
             results = {
-                "heights" : [],
-                "discharges_critical" : [],
-                "discharges_ferguson" : []
+                "heights" : [0.],
+                "discharges_critical" : [0.],
+                "discharges_ferguson" : [0.]
             }
 
             dz = max(section.z) - min(section.z)
