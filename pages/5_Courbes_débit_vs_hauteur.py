@@ -6,7 +6,7 @@ import streamlit as st
 st.title("Courbes débit vs hauteur")
 
 if "laws" not in st.session_state:
-    st.session_state.laws = ["Critical", "Ferguson"]
+    st.session_state.laws = ["Critique", "Ferguson"]
 
 if "height_step" not in st.session_state:
     st.session_state.height_step = 0.10
@@ -34,7 +34,7 @@ if "section" in st.session_state:
             st.session_state.d84 = st.session_state._d84
 
         laws = st.multiselect("Sélectionner les lois d'écoulement",
-                              ["Critical", "Ferguson"],
+                              ["Critique", "Ferguson"],
                               default=st.session_state.laws,
                               key="_laws",
                               on_change=update_laws
@@ -75,7 +75,7 @@ if "section" in st.session_state:
         if len(laws) > 0:
             results = {
                 "heights" : [0.],
-                "discharges_critical" : [0.],
+                "discharges_critique" : [0.],
                 "discharges_ferguson" : [0.]
             }
 
@@ -91,12 +91,12 @@ if "section" in st.session_state:
                         if height not in results["heights"]:
                             results["heights"].append(height)
                         results["discharges_ferguson"].append(discharge)
-                if "Critical" in laws:
+                if "Critique" in laws:
                     discharge = section.critical(min(section.z) + height)
                     if discharge:
                         if height not in results["heights"]:
                             results["heights"].append(height)
-                        results["discharges_critical"].append(discharge)
+                        results["discharges_critique"].append(discharge)
 
             fig = go.Figure()
             for law in laws:
