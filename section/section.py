@@ -335,8 +335,8 @@ class Section:
         
         return pd.DataFrame(
             {
-                "Distance" : self.x,
-                "Altitude" : self.z
+                "Distance [m]" : self.x,
+                "Altitude [m]" : self.z
             }
         )
 
