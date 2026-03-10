@@ -9,14 +9,13 @@ if "section" in st.session_state:
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=section.x,
                                  y=section.z,
-                                 mode="lines",
-                                 name="section"))
+                                 mode="lines")
+                                 )
 
         fig.update_layout(
             xaxis_title="distance [m]",
             yaxis_title="altitude [m]",
-            yaxis_scaleanchor="x",
-            showlegend=True
+            yaxis_scaleanchor="x"
         )
 
         fig.update_xaxes(showgrid=True)

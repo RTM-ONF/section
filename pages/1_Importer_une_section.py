@@ -86,7 +86,6 @@ if st.session_state.section:
 
 st.write("")
 
-# if st.checkbox("Afficher l'aide"):
 with st.expander("Documentation"):
     st.markdown(
         """

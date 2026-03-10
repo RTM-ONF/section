@@ -21,13 +21,13 @@ if "height_step" not in st.session_state:
     st.session_state.height_step = 0.10
 
 if "slope" not in st.session_state:
-    st.session_state.slope = 5.
+    st.session_state.slope = 6.
 
 if "d84" not in st.session_state:
-    st.session_state.d84 = 0.01
+    st.session_state.d84 = 0.10
 
 if "strickler_coef" not in st.session_state:
-    st.session_state.strickler_coef = 1.
+    st.session_state.strickler_coef = 25.
 
 if "results" not in st.session_state:
     st.session_state.results = dict({})
@@ -363,24 +363,24 @@ if "section" in st.session_state:
                               }
 
             if "Critique" in laws:
-                v = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["vitesse Critique [m/s]"]))
-                Q = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["débit Critique [m^3/s]"]))
-                Hs = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge spécifique Critique [m]"]))
-                H = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge Critique [m]"]))
+                v = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["vitesse Critique [m/s]"], left=np.nan, right=np.nan))
+                Q = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["débit Critique [m^3/s]"], left=np.nan, right=np.nan))
+                Hs = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge spécifique Critique [m]"], left=np.nan, right=np.nan))
+                H = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge Critique [m]"], left=np.nan, right=np.nan))
                 data["Critique"] = [round(v, 3), round(Q, 3), round(Hs, 3), round(H, 3)]
 
             if "Ferguson" in laws:
-                v = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["vitesse Ferguson [m/s]"]))
-                Q = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["débit Ferguson [m^3/s]"]))
-                Hs = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge spécifique Ferguson [m]"]))
-                H = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge Ferguson [m]"]))
+                v = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["vitesse Ferguson [m/s]"], left=np.nan, right=np.nan))
+                Q = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["débit Ferguson [m^3/s]"], left=np.nan, right=np.nan))
+                Hs = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge spécifique Ferguson [m]"], left=np.nan, right=np.nan))
+                H = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge Ferguson [m]"], left=np.nan, right=np.nan))
                 data["Ferguson"] = [round(v, 3), round(Q, 3), round(Hs, 3), round(H, 3)]
 
             if "Strickler" in laws:
-                v = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["vitesse Strickler [m/s]"]))
-                Q = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["débit Strickler [m^3/s]"]))
-                Hs = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge spécifique Strickler [m]"]))
-                H = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge Strickler [m]"]))
+                v = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["vitesse Strickler [m/s]"], left=np.nan, right=np.nan))
+                Q = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["débit Strickler [m^3/s]"], left=np.nan, right=np.nan))
+                Hs = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge spécifique Strickler [m]"], left=np.nan, right=np.nan))
+                H = float(np.interp(water_height, st.session_state.results["hauteur [m]"], st.session_state.results["charge Strickler [m]"], left=np.nan, right=np.nan))
                 data["Strickler"] = [round(v, 3), round(Q, 3), round(Hs, 3), round(H, 3)]
 
             st.dataframe(pd.DataFrame(data),
@@ -390,11 +390,42 @@ if "section" in st.session_state:
     with st.expander("Documentation"):
         st.markdown(
             """
+            #### Contrainte hydraulique
+
+            $\\boxed{\\tau = \\rho \\times g \\times R_h \\times J}$
+
+            - $\\tau$ : contrainte hydraulique [$Pa$] ;
+            - $\\rho$ : masse volumique de l'eau [$kg/m^3$] ;
+            - $g$ : accélération de la pesanteur [$m/s^2$] ;
+            - $R_h$ : rayon hydraulique [$m$] ;
+            - $J$ : pente.
+
+            #### Débit liquide
+
             $\\boxed{Q = v \\times A}$
 
-            - Q : débit liquide ;
-            - v : vitesse d'écoulement ;
-            - A : surface mouillée.
+            - $Q$ : débit liquide [$m^3/s$] ;
+            - $v$ : vitesse d'écoulement [$m/s$] ;
+            - $A$ : surface mouillée [$m^2$].
+
+            #### Charge spécifique
+
+            $\\boxed{H_s = h + \\frac{v^2}{2 \\times g}}$
+
+            - $H_s$ : charge spécifique [$m$] ;
+            - $h$ : hauteur d'eau [$m$] ;
+            - $v$ : vitesse d'écoulement [$m/s$] ;
+            - $g$ : accélération de la pesanteur [$m/s^2$].
+
+            #### Charge
+
+            $\\boxed{H = z_{min} + h + \\frac{v^2}{2 \\times g}}$
+
+            - $H$ : charge [$m$] ;
+            - $z_{min}$ : altitude min de la section [$m$] ;
+            - $h$ : hauteur d'eau [$m$] ;
+            - $v$ : vitesse d'écoulement [$m/s$] ;
+            - $g$ : accélération de la pesanteur [$m/s^2$].
 
             #### Régime critique
 
@@ -402,27 +433,27 @@ if "section" in st.session_state:
 
             $\\boxed{v = \\sqrt{g \\times D}}$
 
-            - $v$ : vitesse d'écoulement ;
-            - $g$ : accélération de la pesanteur ;
-            - $D$ : profondeur hydraulique.
+            - $v$ : vitesse d'écoulement [$m/s$] ;
+            - $g$ : accélération de la pesanteur [$m/s^2$] ;
+            - $D$ : profondeur hydraulique [$m$].
 
             #### Ferguson
 
             $\\boxed{\\frac{v}{\\sqrt{g J R_h}} = \\frac{2.5\\left(\\frac{R_h}{D_{84}}\\right)}{\\sqrt{1 + 0.15\\left(\\frac{R_h}{D_{84}}\\right)^{\\frac{5}{3}}}}}$
 
-            - $v$ : vitesse d'écoulement ;
-            - $g$ : accélération de la pesanteur ;
+            - $v$ : vitesse d'écoulement [$m/s$] ;
+            - $g$ : accélération de la pesanteur [$m/s^2$] ;
             - $J$ : pente ;
-            - $R_h$ : rayon hydraulique ;
-            - $D_{84}$ : diamètre caractéristique.
+            - $R_h$ : rayon hydraulique [$m$] ;
+            - $D_{84}$ : diamètre caractéristique [$m$].
 
             #### Strickler
 
             $\\boxed{v = K \\times R_h^{\\frac{2}{3}} \\times J^{\\frac{1}{2}}}$
 
-            - $v$ : vitesse d'écoulement ;
-            - $K$ : coefficient de Strickler ;
-            - $R_h$ : rayon hydraulique ;
+            - $v$ : vitesse d'écoulement [$m/s$] ;
+            - $K$ : coefficient de Strickler [$m^{\\frac{1}{3}}/s$] ;
+            - $R_h$ : rayon hydraulique [$m$] ;
             - $J$ : pente.
 
             """
