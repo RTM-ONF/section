@@ -65,7 +65,7 @@ if "section" in st.session_state:
 
         with st.expander("Paramètres"):
 
-            height_step = st.number_input(label="Pas de discrétisation en hauteur [m]",
+            height_step = st.number_input(label="Pas de discrétisation en hauteur [$m$]",
                                         value=st.session_state.height_step,
                                         min_value=0.05,
                                         max_value=float(int(max(section.z) - min(section.z))),
@@ -75,7 +75,7 @@ if "section" in st.session_state:
                                         on_change=update_height_step
                                         )
 
-            slope = st.number_input(label="Pente [%] (Ferguson, Strickler)",
+            slope = st.number_input(label="Pente [$\\%$] (Ferguson, Strickler)",
                                     value=st.session_state.slope,
                                     min_value=0.01,
                                     step=0.1,
@@ -84,7 +84,7 @@ if "section" in st.session_state:
                                     on_change=update_slope
                                     )
 
-            d84 = st.number_input(label="D_84 [m] (Ferguson)",
+            d84 = st.number_input(label="$D_{84}$ [$m$] (Ferguson)",
                                   value=st.session_state.d84,
                                   min_value=0.001,
                                   step=0.005,
@@ -309,7 +309,7 @@ if "section" in st.session_state:
         def update():
             st.session_state.water_height = st.session_state._water_height
         
-        water_height = st.number_input(label="Hauteur d'eau [m]",
+        water_height = st.number_input(label="Hauteur d'eau [$m$]",
                                        value=st.session_state.water_height,
                                        min_value=0.,
                                        max_value=float(ceil(max(section.z)-min(section.z))),
@@ -319,13 +319,13 @@ if "section" in st.session_state:
                                        on_change=update
                                        )
 
-        st.write(f"Altitude de la ligne d'eau : {round(min(section.z) + water_height, 3)} m")
+        st.write(f"Altitude de la ligne d'eau : {round(min(section.z) + water_height, 3)} $m$")
 
         geom_props = section.geometric_properties(min(section.z) + water_height)
                 
         if geom_props:
             B, P, A, R, D = geom_props
-            st.write(f"Contrainte hydraulique : {round(1000. * 9.81 * R * slope/100, 3)} Pa")
+            st.write(f"Contrainte hydraulique : {round(1000. * 9.81 * R * slope/100, 3)} $Pa$")
 
         water_lines = section.water_lines(min(section.z) + water_height)
 

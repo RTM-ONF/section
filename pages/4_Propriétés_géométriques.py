@@ -16,7 +16,7 @@ if "section" in st.session_state:
         def update():
             st.session_state.water_height = st.session_state._water_height
         
-        water_height = st.number_input(label="Hauteur d'eau [m]",
+        water_height = st.number_input(label="Hauteur d'eau [$m$]",
                                        value=st.session_state.water_height,
                                        min_value=0.,
                                        max_value=float(ceil(max(section.z)-min(section.z))),
@@ -26,7 +26,7 @@ if "section" in st.session_state:
                                        on_change=update
                                        )
 
-        st.write(f"Altitude de la ligne d'eau : {round(min(section.z) + water_height, 3)} m")
+        st.write(f"Altitude de la ligne d'eau : {round(min(section.z) + water_height, 3)} $m$")
         
         water_lines = section.water_lines(min(section.z) + water_height)
 
