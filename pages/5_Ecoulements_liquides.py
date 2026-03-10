@@ -225,7 +225,7 @@ if "section" in st.session_state:
                     st.session_state.results["charge spécifique Strickler [m]"].append(0.)
                     st.session_state.results["charge Strickler [m]"].append(0.)
 
-            st.subheader("Courbe Q = f(h)")
+            st.subheader("Courbe $Q = f(h)$")
 
             fig = go.Figure()
             for law in laws:
@@ -249,7 +249,7 @@ if "section" in st.session_state:
 
             st.plotly_chart(fig)
 
-            st.subheader("Courbe v = f(Q)")
+            st.subheader("Courbe $v = f(Q)$")
 
             fig = go.Figure()
             for law in laws:
@@ -273,7 +273,7 @@ if "section" in st.session_state:
 
             st.plotly_chart(fig)
 
-            st.subheader("Courbe $\\tau$ = f(Q)")
+            st.subheader("Courbe $\\tau = f(Q)$")
 
             fig = go.Figure()
             for law in laws:
