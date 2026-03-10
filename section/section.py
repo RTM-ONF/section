@@ -89,7 +89,7 @@ class Section:
         
         Q = u * A
 
-        return float(Q)
+        return float(u), float(Q)
 
     def duplicate(self):
         """
@@ -142,7 +142,7 @@ class Section:
 
         Q = u * A
 
-        return float(Q)
+        return float(u), float(Q)
 
     def from_df(self, df, x_field="X", z_field="Z"):
         if not isinstance(df, pd.DataFrame):
@@ -301,6 +301,35 @@ class Section:
             for i in range(1, len(self._xz)):
                 dist += ((self.x[i] - self.x[i-1])**2 + (self.z[i] - self.z[i-1])**2)**0.5
             return float(dist)
+
+    def strickler(self, altitude, slope, coefficient):
+        if not (isinstance(altitude, float) or isinstance(altitude, int)):
+            return None
+        elif not min(self.z) <= altitude <= max(self.z):
+            return None
+
+        if not (isinstance(slope, float) or isinstance(slope, int)):
+            return None
+        elif not slope >= 0:
+            return None
+
+        if not (isinstance(coefficient, float) or isinstance(coefficient, int)):
+            return None
+        elif not coefficient > 0:
+            return None
+
+        geom_props = self.geometric_properties(altitude)
+
+        if not geom_props:
+            return None
+
+        B, P, A, R, D = geom_props
+
+        u = coefficient * R**(2./3.) * slope**(1./2.)
+        
+        Q = u * A
+
+        return float(u), float(Q)
 
     def to_df(self, x_field="distance", z_field="altitude"):
         

@@ -1,4 +1,6 @@
 from math import ceil
+
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -58,13 +60,17 @@ if "section" in st.session_state:
         if geom_props:
             B, P, A, R, D = geom_props
 
-            st.markdown(f"""
-            | Grandeur               | Valeur                       |
-            |------------------------|------------------------------|
-            | largeur au miroir      | {round(B, 3)} m              |
-            | périmètre mouillé      | {round(P, 3)} m              |
-            | surface mouillée       | {round(A, 3)} m²              |
-            | rayon hydraulique      | {round(R, 3)} m              |
-            | profondeur hydraulique | {round(D, 3)} m              |
+            data = {
+                "Grandeur" : ["largeur au miroir [m]",
+                              "périmètre mouillé [m]",
+                              "surface mouillée [m²]",
+                              "rayon hydraulique [m]",
+                              "profondeur hydraulique [m]"],
+                "Valeur" : [round(B, 3),
+                            round(P, 3),
+                            round(A, 3),
+                            round(R, 3),
+                            round(D, 3)]
+            }
 
-            """)
+            st.dataframe(pd.DataFrame(data), hide_index=True)

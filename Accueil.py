@@ -24,7 +24,7 @@ Explorez votre section sous forme de graphique interactif.
 Renseignez une hauteur d’eau pour afficher automatiquement le niveau d’eau sur la section et
 les principales caractéristiques géométriques.
 
-#### 5. Courbes débit vs hauteur
+#### 5. Ecoulements liquides
 
-Générez les courbes de débit en fonction de la hauteur d’eau selon plusieurs modèles hydrauliques.
+Appliquez une ou plusieurs lois d'écoulements liquides à votre section.
 """
